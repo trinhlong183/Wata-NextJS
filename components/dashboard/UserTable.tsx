@@ -1,5 +1,5 @@
 import DeleteButton from "@/components/dashboard/DeleteButton";
-
+import EditUserModal from "@/components/dashboard/EditUserModal";
 type UserRow = {
   id: string;
   email: string;
@@ -50,6 +50,7 @@ export default function UserTable({ users, isSSR = false }: UserTableProps) {
               <td className="px-4 py-3">
                 {isSSR ? (
                   <div className="flex flex-wrap items-center gap-2">
+                    <EditUserModal user={{ id: user.id, email: user.email, name: user.name }} />
                     <DeleteButton id={user.id} email={user.email} />
                   </div>
                 ) : (

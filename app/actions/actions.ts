@@ -61,21 +61,40 @@ export async function createUser(formData: FormData) {
     body: JSON.stringify({ email, name, password }),
   });
 
-  if (!res.ok) {
-    let details = "";
+  // if (!res.ok) {
+  //   let details = "";
+
+  //   try {
+  //     const errorJson = await res.json();
+  //     details = JSON.stringify(errorJson);
+  //   } catch {
+  //     details = await res.text().catch(() => "");
+  //   }
+
+  //   // throw new Error(
+  //   //   `Failed to create user: ${res.status} ${res.statusText} (${url})${details ? ` - ${details}` : ""}`,
+  //   // );
+  //   throw new Error(details || "Có lỗi xảy ra khi tạo user!");
+  // }
+if (!res.ok) {
+    let errorMessage = "Tạo user thất bại!"; // Lỗi mặc định
 
     try {
-      const errorJson = await res.json();
-      details = JSON.stringify(errorJson);
-    } catch {
-      details = await res.text().catch(() => "");
+      const errorData = await res.json();
+      
+      // Xử lý thông minh: Dù backend trả về Mảng lỗi hay Chuỗi lỗi đều đọc được
+      if (errorData && errorData.message) {
+        errorMessage = Array.isArray(errorData.message) 
+          ? errorData.message[0] // Nếu là mảng, lấy câu lỗi đầu tiên
+          : errorData.message;   // Nếu là chuỗi, lấy luôn
+      }
+    } catch (e) {
+      // Bỏ qua nếu không đọc được JSON
     }
 
-    throw new Error(
-      `Failed to create user: ${res.status} ${res.statusText} (${url})${details ? ` - ${details}` : ""}`,
-    );
+    // Ném lỗi ra ngoài
+    throw new Error(errorMessage);
   }
-
   return res.json();
 }
 
@@ -102,9 +121,11 @@ export async function deleteUser(id: string) {
       details = await res.text().catch(() => "");
     }
 
-    throw new Error(
-      `Failed to delete user: ${res.status} ${res.statusText}${details ? ` - ${details}` : ""}`,
-    );
+    // throw new Error(
+    //   `Failed to delete user: ${res.status} ${res.statusText}${details ? ` - ${details}` : ""}`,
+    // );
+
+    throw new Error(details || "Có lỗi xảy ra khi xóa user!");
   }
 
   try {
@@ -117,4 +138,44 @@ export async function deleteUser(id: string) {
   } catch {
     return { success: true, message: "Xoa user thanh cong" };
   }
+}
+export async function updateUser(id: string, formData: FormData) {
+  if (!API_URL) {
+    throw new Error("Missing NEXT_PUBLIC_API_URL in .env");
+  }
+
+  // Lấy dữ liệu từ form
+  const email = formData.get("email")?.toString();
+  const name = formData.get("name")?.toString();
+  const password = formData.get("password")?.toString();
+
+  // Gom dữ liệu lại (NestJS dùng PATCH nên thường chỉ cần gửi những trường cần sửa)
+  // Nếu password rỗng (người dùng không muốn đổi pass), ta không gửi lên.
+  const payload: any = { email, name };
+  if (password) {
+    payload.password = password;
+  }
+
+  const res = await fetch(`${API_URL}/user/${id}`, {
+    method: "PATCH", // Chuẩn theo backend của bạn
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    let errorMessage = "Cập nhật user thất bại!";
+    try {
+      const errorData = await res.json();
+      if (errorData && errorData.message) {
+        errorMessage = Array.isArray(errorData.message)
+          ? errorData.message[0]
+          : errorData.message;
+      }
+    } catch (e) {
+      // Bỏ qua
+    }
+    throw new Error(errorMessage);
+  }
+
+  return res.json();
 }
