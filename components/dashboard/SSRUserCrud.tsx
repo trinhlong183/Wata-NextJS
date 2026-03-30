@@ -12,26 +12,6 @@ export default function SSRUserCrud() {
   const router = useRouter();
   const [isCreating, startCreating] = useTransition();
 
-  // function handleCreate(event: FormEvent<HTMLFormElement>) {
-  //   event.preventDefault();
-  //   const form = event.currentTarget;
-  //   const formData = new FormData(form);
-
-  //   startCreating(async () => {
-  //     try {
-  //       await createUser(formData);
-  //       toast.success("Tao user thanh cong");
-  //       form.reset();
-  //       router.refresh();
-  //     } catch (error) {
-  //       const message =
-  //         error instanceof Error ? error.message : "Tao user that bai";
-  //       toast.error("Tao user that bai", {
-  //         description: message,
-  //       });
-  //     }
-  //   });
-  // }
   function handleCreate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -44,10 +24,8 @@ export default function SSRUserCrud() {
         form.reset();
         router.refresh();
       } catch (error: any) {
-        // Lấy đúng message đã được ném ra từ file actions.ts
         const errMessage = error.message || "Có lỗi xảy ra";
-        
-        // Gọi Toast hiển thị
+
         toast.error("Lỗi tạo người dùng", {
           description: errMessage,
         });

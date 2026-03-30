@@ -15,24 +15,7 @@ export default function DeleteButton({ id, email }: DeleteButtonProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  // function handleDelete() {
-  //   startTransition(async () => {
-  //     try {
-  //       const result = await deleteUser(id);
-  //       toast.success(result.message || "Xoa user thanh cong", {
-  //         description: email ? `User: ${email}` : undefined,
-  //       });
-  //       router.refresh();
-  //     } catch (error) {
-  //       const message =
-  //         error instanceof Error ? error.message : "Xoa user that bai";
-  //       toast.error("Xoa user that bai", {
-  //         description: message,
-  //       });
-  //     }
-  //   });
-  // }
-function handleDelete() {
+  function handleDelete() {
     startTransition(async () => {
       const promise = deleteUser(id).then((result) => {
         router.refresh();
@@ -41,8 +24,8 @@ function handleDelete() {
 
       toast.promise(promise, {
         loading: "Đang xóa người dùng...",
-        success: (result) => {
-          return result.message || `Đã xóa thành công ${email || 'user'}!`;
+        success: () => {
+          return `Đã xóa thành công ${email || "user"}!`;
         },
         error: (err) => {
           return err.message || "Xóa user thất bại!";

@@ -24,7 +24,7 @@ type UserProps = {
 export default function EditUserModal({ user }: { user: UserProps }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [isOpen, setIsOpen] = useState(false); // Trạng thái đóng/mở Modal
+  const [isOpen, setIsOpen] = useState(false);
 
   function handleUpdate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -32,7 +32,7 @@ export default function EditUserModal({ user }: { user: UserProps }) {
 
     startTransition(async () => {
       const promise = updateUser(user.id, formData).then((result) => {
-        setIsOpen(false); // Đóng modal khi thành công
+        setIsOpen(false);
         router.refresh(); // Tải lại bảng
         return result;
       });
@@ -47,14 +47,12 @@ export default function EditUserModal({ user }: { user: UserProps }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      {/* Nút bấm để mở Modal */}
       <DialogTrigger asChild>
         <button className="inline-flex h-7 items-center rounded-md border border-blue-300 bg-blue-50 px-2 text-xs font-medium text-blue-700 hover:bg-blue-100">
           Sửa
         </button>
       </DialogTrigger>
-      
-      {/* Nội dung Modal */}
+
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Cập nhật thông tin</DialogTitle>
@@ -63,17 +61,33 @@ export default function EditUserModal({ user }: { user: UserProps }) {
         <form onSubmit={handleUpdate} className="grid gap-4 py-4">
           <div className="grid gap-2">
             <label className="text-sm font-medium">Email</label>
-            <Input name="email" type="email" defaultValue={user.email} required />
-          </div>
-          
-          <div className="grid gap-2">
-            <label className="text-sm font-medium">Tên</label>
-            <Input name="name" type="text" defaultValue={user.name || ""} required />
+            <Input
+              name="email"
+              type="email"
+              defaultValue={user.email}
+              required
+            />
           </div>
 
           <div className="grid gap-2">
-            <label className="text-sm font-medium">Mật khẩu mới (Tùy chọn)</label>
-            <Input name="password" type="password" placeholder="Bỏ trống nếu không muốn đổi" />
+            <label className="text-sm font-medium">Tên</label>
+            <Input
+              name="name"
+              type="text"
+              defaultValue={user.name || ""}
+              required
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <label className="text-sm font-medium">
+              Mật khẩu mới (Tùy chọn)
+            </label>
+            <Input
+              name="password"
+              type="password"
+              placeholder="Bỏ trống nếu không muốn đổi"
+            />
           </div>
 
           <Button type="submit" disabled={isPending} className="mt-2">
